@@ -1,148 +1,142 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Scratch-Off</title>
+    <title>Happy Scratchers</title>
     <style>
         body {
-            text-align: center;
             font-family: Arial, sans-serif;
-            background: url('background.jpg') no-repeat center center fixed;
-            background-size: cover;
-            color: white;
-        }
-        h1 {
-            font-size: 36px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        .scratch-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        .scratch-card {
-            position: relative;
-            width: 180px;
-            height: 250px;
-            background: red;
-            border: 3px solid black;
-            font-size: 40px;
-            font-weight: bold;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .scratch-container {
+            display: grid;
+            grid-template-columns: repeat(5, 100px);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .scratch-card {
+            width: 100px;
+            height: 100px;
+            background-color: #fff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #333;
             cursor: pointer;
             user-select: none;
-            overflow: hidden;
-            border-radius: 10px;
-            color: white;
+            transition: background-color 0.3s ease;
         }
-        .prize {
-            display: none;
-            font-size: 24px;
-            font-weight: bold;
-            color: black;
+
+        .scratch-card.revealed {
+            background-color: #ff6f61;
+            color: #fff;
+            font-size: 1.2rem;
             text-align: center;
+            padding: 5px;
         }
-        .scratch-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: blue;
-            z-index: 2;
-            cursor: crosshair;
-        }
-        #refresh-btn {
-            margin-top: 20px;
+
+        .refresh-button {
             padding: 10px 20px;
-            font-size: 18px;
-            cursor: pointer;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #ff6f61;
             border: none;
-            background: orange;
-            color: white;
             border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .refresh-button:hover {
+            background-color: #ff3b2f;
         }
     </style>
 </head>
 <body>
-    <h1>Happy Scratch-Off</h1>
-    <div class="scratch-container" id="scratch-container"></div>
-    <button id="refresh-btn" onclick="createScratchers()">Refresh</button>
+    <h1>Happy Scratchers</h1>
+    <div class="scratch-container" id="scratch-container">
+        <!-- 刮刮乐卡片将由JavaScript生成 -->
+    </div>
+    <button class="refresh-button" onclick="resetScratchCards()">Refresh</button>
 
     <script>
-        let prizes = [
-            "Free Homework Pass", "Extra 5 Points on a Quiz", "Free Bag of Chips", "Free Candy",
-            "Sit in the Teacher’s Chair for a Day", "5% Deduction from Your Lowest Homework Assignment", 
-            "You Are Allowed to Eat in Class for One Day", "You Are Allowed to Listen to Music in Class for One Day", 
-            "Choose the Next Class Warm-Up Activity", "Skip One Question on a Quiz", "5 Minutes of Free Time at the End of Class",
-            "Turn in an Assignment One Day Late Without Penalty", "Pick a Song for the Class Playlist", "Choose Your Seat for a Day",
-            "Get a Hint on the Next Quiz", "Choose a Class Game or Brain Break Activity", "Borrow a Classroom Item Without Signing It Out",
-            "One-Time Use of a Calculator on a No-Calculator Quiz", "Lead a Class Discussion or Activity", "One Positive Note Sent Home to Parents"
+        const rewards = [
+            "Free Homework Pass (Skip one homework assignment)",
+            "Extra 5 Points on a Quiz",
+            "Free Bag of Chips",
+            "Free Candy",
+            "Sit in the Teacher’s Chair for a Day",
+            "5% Deduction from Your Lowest Homework Assignment",
+            "You Are Allowed to Eat in Class for One Day",
+            "You Are Allowed to Listen to Music in Class for One Day",
+            "Choose the Next Class Warm-Up Activity",
+            "Skip One Question on a Quiz",
+            "5 Minutes of Free Time at the End of Class",
+            "Turn in an Assignment One Day Late Without Penalty",
+            "Pick a Song for the Class Playlist",
+            "Choose Your Seat for a Day",
+            "Get a Hint on the Next Quiz",
+            "Choose a Class Game or Brain Break Activity",
+            "Borrow a Classroom Item Without Signing It Out",
+            "One-Time Use of a Calculator on a No-Calculator Quiz",
+            "Lead a Class Discussion or Activity",
+            "One Positive Note Sent Home to Parents"
         ];
+
+        function createScratchCards() {
+            const container = document.getElementById('scratch-container');
+            container.innerHTML = '';
+            const shuffledRewards = shuffleArray(rewards).slice(0, 20);
+
+            shuffledRewards.forEach((reward, index) => {
+                const card = document.createElement('div');
+                card.classList.add('scratch-card');
+                card.textContent = index + 1;
+                card.dataset.reward = reward;
+                card.addEventListener('click', () => revealReward(card));
+                container.appendChild(card);
+            });
+        }
+
+        function revealReward(card) {
+            if (!card.classList.contains('revealed')) {
+                card.classList.add('revealed');
+                card.textContent = card.dataset.reward;
+            }
+        }
+
+        function resetScratchCards() {
+            createScratchCards();
+        }
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [array[i], array[j]] = [array[j], array[i]];
             }
+            return array;
         }
 
-        function createScratchers() {
-            const container = document.getElementById("scratch-container");
-            container.innerHTML = "";
-            shuffleArray(prizes);
-
-            for (let i = 0; i < 20; i++) {
-                let card = document.createElement("div");
-                card.classList.add("scratch-card");
-                card.innerHTML = `<span style='font-size: 50px;'>${i + 1}</span><div class='prize'>${prizes[i]}</div><canvas class='scratch-overlay'></canvas>`;
-                
-                let canvas = card.querySelector(".scratch-overlay");
-                let ctx = canvas.getContext("2d");
-                canvas.width = 180;
-                canvas.height = 250;
-                ctx.fillStyle = "gray";
-                ctx.fillRect(0, 0, 180, 250);
-                
-                let isScratching = false;
-                function scratch(e) {
-                    if (!isScratching) return;
-                    let rect = canvas.getBoundingClientRect();
-                    let x = e.clientX - rect.left;
-                    let y = e.clientY - rect.top;
-                    ctx.globalCompositeOperation = "destination-out";
-                    ctx.beginPath();
-                    ctx.arc(x, y, 20, 0, 2 * Math.PI);
-                    ctx.fill();
-                }
-
-                canvas.addEventListener("mousedown", () => isScratching = true);
-                canvas.addEventListener("mouseup", () => isScratching = false);
-                canvas.addEventListener("mousemove", scratch);
-                canvas.addEventListener("touchstart", (e) => {
-                    isScratching = true;
-                    scratch(e.touches[0]);
-                });
-                canvas.addEventListener("touchmove", (e) => scratch(e.touches[0]));
-                canvas.addEventListener("touchend", () => isScratching = false);
-                
-                card.addEventListener("dblclick", function() {
-                    canvas.remove();
-                    this.querySelector("span").style.display = "none";
-                    this.querySelector(".prize").style.display = "block";
-                });
-                
-                container.appendChild(card);
-            }
-        }
-        
-        createScratchers();
+        window.onload = createScratchCards;
     </script>
 </body>
 </html>
